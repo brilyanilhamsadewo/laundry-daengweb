@@ -15,7 +15,10 @@
                     <template slot="user_id" slot-scope="row">
                         {{ row.item.user.name }}
                     </template>
-                    <template v-slot:cell(actions)="row">
+                    <template slot="service" slot-scope="row">
+                        {{ row.item.service }} {{ row.item.service_type }}
+                    </template>
+                    <template slot="actions" slot-scope="row">
                         <router-link :to="{ name: 'products.edit', params: {id: row.item.id} }" class="btn btn-warning btn-sm"><i class="fa fa-pencil"></i></router-link>
                         <button class="btn btn-danger btn-sm" @click="deleteProduct(row.item.id)"><i class="fa fa-trash"></i></button>
                     </template>
@@ -48,50 +51,45 @@ import { mapActions, mapState } from 'vuex'
 export default {
     name: 'DataCourier',
     created() {
-        this.getProducts() //MELAKUKAN REQUEST KETIKA COMPONENT DI-LOAD
+        this.getProducts()
     },
     data() {
         return {
-            //FIELDS UNTUK MENGISI HEADER TABLE YANG AKAN DITAMPILKAN
             fields: [
                 { key: 'name', label: 'Nama Item' },
                 { key: 'unit_type', label: 'Tipe' },
                 { key: 'laundry_type', label: 'Jenis Jasa' },
                 { key: 'price', label: 'Harga' },
                 { key: 'user_id', label: 'Admin' },
+                { key: 'service', label: 'Lama Pengerjaan' },
                 { key: 'actions', label: 'Aksi' }
             ],
-            //VARIABLE UNTUK FORM SEARCH
             search: ''
         }
     },
     computed: {
-        //ME-LOAD STATE DARI MODULE PRODUCTS
         ...mapState('product', {
-            products: state => state.products, //STATE PRODUCTS
+            products: state => state.products
         }),
         page: {
             get() {
-                return this.$store.state.product.page //LOAD STATE PAGE
+                return this.$store.state.product.page
             },
             set(val) {
-                this.$store.commit('product/SET_PAGE', val) //SET STATE PAGE KETIKA VALUE BERUBAH
+                this.$store.commit('product/SET_PAGE', val)
             }
         }
     },
     watch: {
-        //KETIKA TERJADI PERUBAHAN VALUE DARI PAGE
         page() {
-            this.getProducts() //AMBIL DATA TERBARU
+            this.getProducts()
         },
-        //KETIKA TERJADI PERUBAHAN VALUE DARI SEARCH
         search() {
-            this.getProducts(this.search) //AMBIL DATA TERBARU BERDASARKAN VALUE SEARC
+            this.getProducts(this.search)
         }
     },
     methods: {
-      ...mapActions('product', ['getProducts', 'removeProduct']), //LOAD ACTIONS DARI MODULE PRODUCT
-        //FUNGSI UNTUK MENG-HANDLE TOMBOL HAPUS PRODUCT
+        ...mapActions('product', ['getProducts', 'removeProduct']),
         deleteProduct(id) {
             this.$swal({
                 title: 'Kamu Yakin?',
@@ -103,7 +101,7 @@ export default {
                 confirmButtonText: 'Iya, Lanjutkan!'
             }).then((result) => {
                 if (result.value) {
-                    this.removeProduct(id) //KETIKA YES MAKA FUNGSI INI AKAN DIJALANKAN
+                    this.removeProduct(id)
                 }
             })
         }
