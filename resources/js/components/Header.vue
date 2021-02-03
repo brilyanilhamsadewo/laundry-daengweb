@@ -14,6 +14,7 @@
                         <li><router-link to="/">Home <span class="sr-only">(current)</span></router-link></li>
                         <li><router-link :to="{ name: 'outlets.data' }">Outlets</router-link></li>
                         <li><router-link :to="{ name: 'couriers.data' }">Courier</router-link></li>
+                        <li><router-link :to="{ name: 'products.data' }">Products</router-link></li>
                     </ul>
                     <form class="navbar-form navbar-left" role="search">
                         <div class="form-group">
