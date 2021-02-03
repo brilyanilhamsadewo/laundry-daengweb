@@ -1,4 +1,3 @@
-<!-- HTML SECTION -->
 <template>
     <div class="container">
         <div class="login-box">
@@ -38,7 +37,6 @@
     </div>
 </template>
 
-<!-- JAVASCRIPT SECTION -->
 <script>
 import { mapActions, mapMutations, mapGetters, mapState } from 'vuex';
 export default {
@@ -51,35 +49,30 @@ export default {
             }
         }
     },
-    //SEBELUM COMPONENT DI-RENDER
     created() {
-        //KITA MELAKUKAN PENGECEKAN JIKA SUDAH LOGIN DIMANA VALUE isAuth BERNILAI TRUE
         if (this.isAuth) {
-            //MAKA DI-DIRECT KE ROUTE DENGAN NAME home
             this.$router.push({ name: 'home' })
         }
     },
     computed: {
-        ...mapGetters(['isAuth']), //MENGAMBIL GETTERS isAuth DARI VUEX
-      	...mapState(['errors'])
+        ...mapGetters(['isAuth']),
+        ...mapState(['errors'])
     },
     methods: {
-        ...mapActions('auth', ['submit']), //MENGISIASI FUNGSI submit() DARI VUEX AGAR DAPAT DIGUNAKAN PADA COMPONENT TERKAIT. submit() BERASAL DARI ACTION PADA FOLDER STORES/auth.js
+        ...mapActions('auth', ['submit']),
+        ...mapActions('user', ['getUserLogin']),
         ...mapMutations(['CLEAR_ERRORS']),
-      
-      	//KETIKA TOMBOL LOGIN DITEKAN, MAKA AKAN MEMINCU METHODS postLogin()
         postLogin() {
-            //DIMANA TOMBOL INI AKAN MENJALANKAN FUNGSI submit() DENGAN MENGIRIMKAN DATA YANG DIBUTUHKAN
             this.submit(this.data).then(() => {
-                //KEMUDIAN DI CEK VALUE DARI isAuth
-                //APABILA BERNILAI TRUE
                 if (this.isAuth) {
                     this.CLEAR_ERRORS()
-                    //MAKA AKAN DI-DIRECT KE ROUTE DENGAN NAME home
                     this.$router.push({ name: 'home' })
                 }
             })
         }
+    },
+    destroyed() {
+        this.getUserLogin()
     }
 }
 </script>
