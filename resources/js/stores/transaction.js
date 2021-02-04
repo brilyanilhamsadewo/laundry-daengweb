@@ -4,10 +4,14 @@ const state = () => ({
     customers: [], //UNTUK MENAMPUNG DATA CUSTOMER YANG DI-REQUEST
     products: [], //UNTUK MENAMPUNG DATA PRODUCT YANG DI-REQUEST
     transaction: [], //TAMBAHKAN STATE INI
+    list_transaction: [],
     page: 1
 })
 
 const mutations = {
+    ASSIGN_DATA_TRANSACTION(state, payload) {
+        state.list_transaction = payload
+    },
     //MENGUBAH STATE CUSTOMER BERDASARKAN DATA YANG DITERIMA
     ASSIGN_DATA(state, payload) {
         state.customers = payload
@@ -25,6 +29,17 @@ const mutations = {
 }
 
 const actions = {
+    getTransactions({ commit, state }, payload) {
+        let search = typeof payload.search != 'undefined' ? payload.search:''
+        let status = typeof payload.status != 'undefined' ? payload.status:''
+        return new Promise((resolve, reject) => {
+            $axios.get(`/transaction?page=${state.page}&q=${search}&status=${status}`)
+            .then((response) => {
+                commit('ASSIGN_DATA_TRANSACTION', response.data)
+                resolve(response.data)
+            })
+        })
+    },
     //MENGIRIM PERMINTAAN KE SERVER UNTUK MENGAMBIL DATA CUSTOMER BERDASARKAN KEYWORD YANG BERADA DI DALAM PAYLOAD.SEARCH
     getCustomers({ commit, state }, payload) {
         let search = payload.search
