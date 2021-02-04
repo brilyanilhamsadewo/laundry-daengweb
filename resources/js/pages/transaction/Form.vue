@@ -55,7 +55,7 @@
         </div>
         <div class="col-md-12">
             <hr>
-            <button class="btn btn-warning btn-sm" style="margin-bottom: 10px" @click="addProduct">Tambah</button>
+            <button class="btn btn-warning btn-sm" style="margin-bottom: 10px" v-if="filterProduct.length == 0" @click="addProduct">Tambah</button>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover">
                     <thead>
@@ -138,7 +138,12 @@ export default {
         }),
         total() {
             return _.sumBy(this.transactions.detail, function(o) {
-                return o.subtotal
+                return parseFloat(o.subtotal) //TAMBAHKAN parseFloat() UNTUK MEMASTIKAN VALUE YANG DI SUM BUKAN STRING.
+            })
+        },
+        filterProduct() {
+            return _.filter(this.transactions.detail, function(item) {
+                return item.laundry_price == null
             })
         }
     },
@@ -178,7 +183,16 @@ export default {
         },
         submit() {
             this.isSuccess = false
-            this.createTransaction(this.transactions).then(() => this.isSuccess = true)
+            //FILTER DATANYA DENGAN KONDISI LAUNDRY_PRICE != NULL
+            let filter = _.filter(this.transactions.detail, function(item) {
+                return item.laundry_price != null
+            })
+
+            //KEMUDIAN DIHITUNG, JIKA JUMLAH DATA YANG SUDAH DIFILTER LEBIH DARI 0
+            if (filter.length > 0) {
+                //MAKA INSTRUKSI UNTUK MEMBUAT TRANSAKSI DIJALANKAN
+                this.createTransaction(this.transactions).then(() => this.isSuccess = true)
+            }
         },
         newCustomer() {
             this.isForm = true
@@ -188,7 +202,20 @@ export default {
                 this.transactions.customer_id = res.data
                 this.isForm = false
             })
-        }
+        },
+        resetForm() {
+            this.transactions = {
+                customer_id: null,
+                detail: [
+                    { laundry_price: null, qty: 1, price: 0, subtotal: 0 }
+                ]
+            }
+        },
+        addProduct() {
+            if (this.filterProduct.length == 0) {
+                this.transactions.detail.push({ laundry_price: null, qty: null, price: 0, subtotal: 0 })
+            }
+        },
     },
     components: {
         vSelect,
